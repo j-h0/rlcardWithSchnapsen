@@ -23,6 +23,14 @@ class SchnapsenEnv(Env):
         Returns:
             (numpy.array): The extracted state
         '''
+
+        if self.game.is_over():
+            obs = np.array([self])
+        else:
+            stiche_playerOne = self.game.round.dealer.stiche_playerOne
+            stiche_playerTwo = self.game.round.dealer.stiche_playerTwo
+            unknown_cards = stock_pile + [card for card in opponent.hand if card not in known_cards]
+            game_state = self.game.round.dealer.game_state
         raise NotImplementedError
 
     def _decode_action(self, action_id):
