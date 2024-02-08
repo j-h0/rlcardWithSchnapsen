@@ -14,6 +14,7 @@ class SchnapsenEnv(Env):
         self.state_shape = [[5, 52] for _ in range(self.num_players)]
         self.action_shape = [None for _ in range(self.num_players)]
 
+
     def _extract_state(self, state):
         ''' Extract useful information from state for RL. Must be implemented in the child class.
 
@@ -23,12 +24,16 @@ class SchnapsenEnv(Env):
         Returns:
             (numpy.array): The extracted state
         '''
+        extracted_state = {}
+
+        legal_actions = OrderedDict({action.value: None for action in state['legal_actions']})
 
         if self.game.is_over():
             obs = np.array([self])
         else:
             stiche_playerOne = self.game.round.dealer.stiche_playerOne
             stiche_playerTwo = self.game.round.dealer.stiche_playerTwo
+            stock_pile = self.game.round.dealer.stock_pile
             unknown_cards = stock_pile + [card for card in opponent.hand if card not in known_cards]
             game_state = self.game.round.dealer.game_state
         raise NotImplementedError

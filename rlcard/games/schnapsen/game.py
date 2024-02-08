@@ -14,9 +14,8 @@ class SchnapsenGame:
         self.allow_step_back = allow_step_back
         self.np_random = np.random.RandomState()
         self.judge = GinRummyJudge(game=self)
-        self.settings = Settings()
         self.actions = None  # type: List[ActionEvent] or None # must reset in init_game
-        self.round = None  # round: GinRummyRound or None, must reset in init_game
+        self.round = None  # round: SchnapsenRound or None, must reset in init_game
         self.num_players = 2
 
     def init_game(self):
@@ -105,7 +104,7 @@ class SchnapsenGame:
             (list): A list of legal actions
         '''
 
-        return self.round.get_legal_actions(self.players, self.round.current_player)
+        return self.round.get_legal_actions(self.players, self.round.current_player, self.round.roundTrump, self.round.)
 
 
     @staticmethod

@@ -1,7 +1,3 @@
-class Trick:
-    def __init__(self, trump, thirstCard, secondCard):
-        self.RANK_TO_STRING = {2: "J", 3: "Q", 4: "K", 10: "T", 11: "A"}
-
 class Moves:
     def get_legal_leader_moves(self, game_engine: 'GamePlayEngine', game_state: GameState) -> Iterable[Move]:
     # all cards in the hand can be played
@@ -64,5 +60,3 @@ class Moves:
             return RegularMove.from_cards(trump_cards)
         # failing this, you can play anything
         return RegularMove.from_cards(hand.get_cards())
-    
-
