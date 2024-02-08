@@ -9,24 +9,41 @@ class SchnapsenDealer:
         ''' Empty discard_pile, set shuffled_deck, set stock_pile
         '''
         self.np_random = np_random
-        self.discard_pile = []  # type: List[Card]
         self.shuffled_deck = utils.get_deck()  # keep a copy of the shuffled cards at start of new hand
         self.np_random.shuffle(self.shuffled_deck)
-        self.stock_pile = self.shuffled_deck.copy()  # type: List[Card]
-        self.trump_card = None
+        self.stock_pile = self.shuffled_deck.copy()  
+        self.__trumpSuit = self.stock_pile[0].suit
 
-    def deal_cards(self, player: SchnapsenPlayer, num: int):
+    def deal_cards(self, player: SchnapsenPlayer):
         ''' Deal some cards from stock_pile to one player
 
         Args:
             player (SchnapsenPlayer): The SchnapsenPlayer object
             num (int): The number of cards to be dealt
         '''
-        for _ in range(num):
+        for _ in range(5):
             player.hand.append(self.stock_pile.pop())
         player.did_populate_hand()
 
-    def trumpExchange(SchnapsenCard):
-        old = self.trump_card
-        self.trump_card = SchnapsenCard
-        return old
+    def trumpExchange(self, SchnapsenCard):
+        if(len(self.stock_pile) >= 2):
+            old = self.stock_pile.pop(0)
+            self.stock_pile.insert(SchnapsenCard)
+            return old
+        return None
+    
+    def trumpCard(self):
+        """Returns the current trump card, i.e., the bottommost card.
+        Or None in case this Talon is empty
+        """
+        if len(self.stock_pile) > 0:
+            return self.stock_pile[0]
+        return None
+    
+    def trumpSuit(self):
+        """Return the suit of the trump card, i.e., the bottommost card.
+        This still works, even when the Talon has become empty.
+        """
+        return self.__trump_suit
+    
+

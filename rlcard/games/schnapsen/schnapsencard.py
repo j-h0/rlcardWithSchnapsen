@@ -3,7 +3,7 @@ from rlcard.games.base import Card
 
 class SchnapsenCard(Card):
     suits = ['H', 'S', 'E', 'L']
-    ranks = ['T', 'J', 'Q', 'K', 'A']
+    ranks = [10, 2, 3, 4, 11]
 
 
     @staticmethod

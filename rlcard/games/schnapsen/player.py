@@ -32,14 +32,10 @@ class SchnapsenPlayer:
             (dict): The state of the player
         '''
         state = {}
-        state['hand'] = self.hand.get_index()
-        state['public_card'] = public_card.get_index() if public_card else None
-        state['all_chips'] = all_chips
-        state['my_chips'] = self.in_chips
-        state['legal_actions'] = legal_actions
         return state
 
     def get_player_id(self):
         ''' Return the id of the player
         '''
         return self.player_id
+
