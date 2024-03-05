@@ -1,11 +1,11 @@
 import numpy as np
 
-from .player import GinRummyPlayer
-from .round import GinRummyRound
-from .judge import GinRummyJudge
-from .utils.settings import Settings, DealerForRound
+from .player import SchnapsenPlayer
+from .round import SchnapsenRound
+from .judger import SchnapsenJudger
+#from .utils.settings import Settings, DealerForRound
 
-from .utils.action_event import *
+from .utils.schnapsen_action_event import *
 
 class SchnapsenGame:
     def __init__(self, allow_step_back=False):
@@ -13,7 +13,7 @@ class SchnapsenGame:
         '''
         self.allow_step_back = allow_step_back
         self.np_random = np.random.RandomState()
-        self.judge = GinRummyJudge(game=self)
+        self.judge = SchnapsenJudger()
         self.actions = None  # type: List[ActionEvent] or None # must reset in init_game
         self.round = None  # round: SchnapsenRound or None, must reset in init_game
         self.num_players = 2
@@ -22,16 +22,12 @@ class SchnapsenGame:
         ''' Initialize all characters in the game and start round 1
         '''
         dealer_id = self.np_random.choice([0, 1])
-        if self.settings.dealer_for_round == DealerForRound.North:
-            dealer_id = 0
-        elif self.settings.dealer_for_round == DealerForRound.South:
-            dealer_id = 1
         self.actions = []
-        self.round = GinRummyRound(dealer_id=dealer_id, np_random=self.np_random)
+        self.round = SchnapsenRound(start_leader_id=dealer_id, np_random=self.np_random)
         for i in range(2):
             num = 11 if i == 0 else 10
             player = self.round.players[(dealer_id + 1 + i) % 2]
-            self.round.dealer.deal_cards(player=player, num=num)
+            self.round.dealer.deal_cards(player=player)
         current_player_id = self.round.current_player_id
         state = self.get_state(player_id=current_player_id)
         return state, current_player_id
@@ -104,8 +100,7 @@ class SchnapsenGame:
             (list): A list of legal actions
         '''
 
-        return self.round.get_legal_actions(self.players, self.round.current_player, self.round.roundTrump, self.round.)
-
+        return True #self.round.get_legal_actions(self.players, self.round.current_player, self.round.roundTrump)
 
     @staticmethod
     def get_num_actions():

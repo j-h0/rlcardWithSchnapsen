@@ -4,7 +4,7 @@ from rlcard.games.base import Card
 
 from .utils import utils
 
-from .utils import melding
+#from .utils import melding
 
 
 class SchnapsenPlayer:

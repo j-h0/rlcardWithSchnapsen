@@ -50,5 +50,5 @@ register(
 
 register(
     env_id='schnapsen',
-    entry_point='rlcard.envs.schnapsen::SchnapesnEnv'
+    entry_point='rlcard.envs.schnapsen:SchnapsenEnv'
 )

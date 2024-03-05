@@ -1,12 +1,12 @@
 
 class SchnapsenJudger:
 
-    def __init__(self, np_random):
-        self.np_random = np_random
+    def __init__(self):
+        self.np_random = 1
 
     def judge_game(self, players, hands):
 
-        if game_state.leader.score.direct_points >= 66:
+        """     if game_state.leader.score.direct_points >= 66:
             follower_score = game_state.follower.score.direct_points
             if follower_score == 0:
                 return game_state.leader, 3
@@ -21,12 +21,13 @@ class SchnapsenJudger:
         elif game_state.are_all_cards_played():
             return game_state.leader, 1
         else:
-            return None
+            return None """
+        return None
 
     
     def judge_trick(self, thirstCard, secondCard):
 
-        leader_card = regular_leader_move.card
+        """         leader_card = regular_leader_move.card
         follower_card = trick.follower_move.card
 
         #https://github.com/intelligent-systems-course/schnapsen
@@ -56,4 +57,5 @@ class SchnapsenJudger:
         winner.score += Score(direct_points=points_gained)
         # add winner's total of direct and pending points as their new direct points
         winner.score = winner.score.redeem_pending_points()
-        return winner, loser, leader_wins    
+        return winner, loser, leader_wins     """
+        return True,True,True

@@ -1,0 +1,1 @@
+from rlcard.games.schnapsen.game import SchnapsenGame as Game

@@ -3,11 +3,11 @@ from collections import OrderedDict
 
 from rlcard.envs import Env
 
+from rlcard.games.schnapsen import Game
+
 class SchnapsenEnv(Env):
      
     def __init__(self, config):
-
-
         self.name = 'schnapsen'
         self.game = Game()
         super().__init__(config=config)
@@ -24,6 +24,7 @@ class SchnapsenEnv(Env):
         Returns:
             (numpy.array): The extracted state
         '''
+        print("debug: SchnapsenEnv : _extract_state")
         extracted_state = {}
 
         legal_actions = OrderedDict({action.value: None for action in state['legal_actions']})

@@ -1,12 +1,12 @@
 from rlcard.games.schnapsen.schnapsencard import SchnapsenCard
 from rlcard.games.schnapsen.dealer import SchnapsenDealer
 from rlcard.games.schnapsen.judger import SchnapsenJudger
-from .player import SchnapsenPlayer
+from rlcard.games.schnapsen.player import SchnapsenPlayer
 from rlcard.games.schnapsen.utils.utils import Moves
 
+from .utils.schnapsen_action_event import DrawCardAction
 
-
-class SchnapsenRound:
+class SchnapsenRound: 
 
     def __init__(self, start_leader_id: int, np_random):
         ''' Initialize the round class
@@ -19,7 +19,7 @@ class SchnapsenRound:
         '''
         self.np_random = np_random
 
-        self.dealer = SchnapsenDealer
+        self.dealer = SchnapsenDealer(np_random = np_random)
 
         self.target = None
 
@@ -31,7 +31,10 @@ class SchnapsenRound:
 
         self.is_over = False
 
-        shuffled_deck = self.dealer.shuffled_deck
+        #shuffled_deck = self.dealer.shuffled_deck
+
+        self.players = [SchnapsenPlayer(player_id=0, np_random=self.np_random),
+                         SchnapsenPlayer(player_id=1, np_random=self.np_random)]
 
         self.current_trick = []
 
@@ -58,7 +61,7 @@ class SchnapsenRound:
         card = self.dealer.stock_pile.pop()
         current_player.hand.append(card=card)
 
-    def marriage(self, action: MarriageAction):
+    """     def marriage(self, action: MarriageAction):
         self.np_random = np_random
 
     def trumpExchange(self, action: TrumpExchangeAction):
@@ -103,7 +106,7 @@ class SchnapsenRound:
             self.current_trick.clear()
   
 
-        return None
+        return None """
 
     def get_state(self, players, player_id):
         ''' Get player's state

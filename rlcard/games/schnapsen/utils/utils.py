@@ -3,24 +3,25 @@ class Trick:
         self.RANK_TO_STRING = {2: "J", 3: "Q", 4: "K", 10: "T", 11: "A"}
 
 class Moves:
-    def get_legal_leader_moves(self, game_engine: 'GamePlayEngine', game_state: GameState) -> Iterable[Move]:
-    # all cards in the hand can be played
-    cards_in_hand = game_state.leader.hand
-    valid_moves: list[Move] = [RegularMove(card) for card in cards_in_hand]
-    # trump exchanges
-    if not game_state.talon.is_empty():
-        trump_jack = Card.get_card(Rank.JACK, game_state.trump_suit)
-        if trump_jack in cards_in_hand:
-            valid_moves.append(Trump_Exchange(trump_jack))
-    # mariages
-    for card in cards_in_hand.filter_rank(Rank.QUEEN):
-        king_card = Card.get_card(Rank.KING, card.suit)
-        if king_card in cards_in_hand:
-            valid_moves.append(Marriage(card, king_card))
+    def get_legal_leader_moves(self, game_engine: 'GamePlayEngine'):# game_state: GameState) -> Iterable[Move]:
+        """         # all cards in the hand can be played
+        cards_in_hand = game_state.leader.hand
+        valid_moves: list[Move] = [RegularMove(card) for card in cards_in_hand]
+        # trump exchanges
+        if not game_state.talon.is_empty():
+            trump_jack = Card.get_card(Rank.JACK, game_state.trump_suit)
+            if trump_jack in cards_in_hand:
+                valid_moves.append(Trump_Exchange(trump_jack))
+        # mariages
+        for card in cards_in_hand.filter_rank(Rank.QUEEN):
+            king_card = Card.get_card(Rank.KING, card.suit)
+            if king_card in cards_in_hand:
+                valid_moves.append(Marriage(card, king_card)) """
+        valid_moves =  []
         return valid_moves
 
-    def get_legal_follower_moves(self, game_engine: 'GamePlayEngine', game_state: GameState, partial_trick: Move) -> Iterable[Move]:
-        hand = game_state.follower.hand
+    def get_legal_follower_moves(self, game_engine: 'GamePlayEngine'):# game_state: GameState, partial_trick: Move) -> Iterable[Move]:
+        """         hand = game_state.follower.hand
         if partial_trick.is_marriage():
             leader_card = cast(Marriage, partial_trick).queen_card
         else:
@@ -63,6 +64,7 @@ class Moves:
         if leader_card.suit != game_state.trump_suit and trump_cards:
             return RegularMove.from_cards(trump_cards)
         # failing this, you can play anything
-        return RegularMove.from_cards(hand.get_cards())
+        return RegularMove.from_cards(hand.get_cards()) """
+        return True
     
 
