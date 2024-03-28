@@ -1,34 +1,60 @@
-class Trick:
-    def __init__(self, trump, thirstCard, secondCard):
-        self.RANK_TO_STRING = {2: "J", 3: "Q", 4: "K", 10: "T", 11: "A"}
+from rlcard.games.schnapsen.schnapsencard import SchnapsenCard as Card
+from rlcard.games.schnapsen.utils.schnapsen_action_event import ActionEvent, PlayCardAction, TrumpExchangePlayerAction, MarriagePlayerAction
+from dataclasses import dataclass, field
+from enum import Enum
+from random import Random
+from typing import Iterable, List, Optional, Tuple, Union, cast, Any
+import numpy as np
+
+def filter_hand_by_suit(hand, suit):
+        suited_handcards = []
+        for card in hand:
+            if card.suit == suit:
+                suited_handcards.append(card)
+        return suited_handcards
+
+def filter_hand(hand, rank, suit = None):
+        suited_handcards = []
+        for card in hand:
+            if card.rank == rank:
+                if(suit is None):
+                    suited_handcards.append(card)
+                else:
+                    if card.suit == suit:
+                        suited_handcards.append(card)
+        return suited_handcards
+
+def getPlayCardMoves(hand):
+    valid_moves = []
+    for card in hand:
+        valid_moves.append(PlayCardAction(card=card))
+    return valid_moves    
 
 class Moves:
-    def get_legal_leader_moves(self, game_engine: 'GamePlayEngine'):# game_state: GameState) -> Iterable[Move]:
-        """         # all cards in the hand can be played
-        cards_in_hand = game_state.leader.hand
-        valid_moves: list[Move] = [RegularMove(card) for card in cards_in_hand]
+    def get_legal_leader_moves(game_state, hand) -> Iterable[ActionEvent]:
+        # all cards in the hand can be played
+        #cards_in_hand = game_state.leader.hand 
+        valid_moves = getPlayCardMoves(hand)
+
         # trump exchanges
-        if not game_state.talon.is_empty():
-            trump_jack = Card.get_card(Rank.JACK, game_state.trump_suit)
-            if trump_jack in cards_in_hand:
-                valid_moves.append(Trump_Exchange(trump_jack))
+        if not game_state['is_closed']:
+            trump_jack = filter_hand(hand,2,game_state['trump_suit'])
+            if trump_jack:
+                valid_moves.append(TrumpExchangePlayerAction())
         # mariages
-        for card in cards_in_hand.filter_rank(Rank.QUEEN):
-            king_card = Card.get_card(Rank.KING, card.suit)
-            if king_card in cards_in_hand:
-                valid_moves.append(Marriage(card, king_card)) """
-        valid_moves =  []
+        for card in filter_hand(hand,3):
+            king_card = filter_hand(hand,4,card.suit)
+            if king_card:
+                suitIndex = card.get_suit_idx()
+                valid_moves.append(MarriagePlayerAction(suit = suitIndex)) 
+
         return valid_moves
 
-    def get_legal_follower_moves(self, game_engine: 'GamePlayEngine'):# game_state: GameState, partial_trick: Move) -> Iterable[Move]:
-        """         hand = game_state.follower.hand
-        if partial_trick.is_marriage():
-            leader_card = cast(Marriage, partial_trick).queen_card
-        else:
-            leader_card = cast(RegularMove, partial_trick).card
-        if game_state.game_phase() is GamePhase.ONE:
+    def get_legal_follower_moves(game_state, hand) -> Iterable[ActionEvent]:
+        valid_moves = []
+        if not game_state['is_closed']:
             # no need to follow, any card in the hand is a legal move
-            return RegularMove.from_cards(hand.get_cards())
+            return getPlayCardMoves(hand)    
         # information from https://www.pagat.com/marriage/schnaps.html
         # ## original formulation ##
         # if your opponent leads a non-trump:
@@ -39,32 +65,45 @@ class Moves:
         # If your opponent leads a trump:
         #     you must play a higher trump if possible;
         #     if you have no higher trump you must play a lower trump;
-        #     if you have no trumps at all you may play anything.
+        #     if you have no trumps at all you may p
         # ## implemented version, realizing that the rules for trump are overlapping with the normal case ##
         # you must play a higher card of the same suit if you can
         # failing this, you must play a lower card of the same suit;
         # --new--> failing this, if the opponen did not play a trump, you must play a trump
         # failing this, you can play anything
-        leader_card_score = game_engine.trick_scorer.rank_to_points(leader_card.rank)
+        leader_card = game_state['current_trick'][0]
         # you must play a higher card of the same suit if you can;
-        same_suit_cards = hand.filter_suit(leader_card.suit)
+        same_suit_cards = filter_hand_by_suit(hand,leader_card.suit)
         if same_suit_cards:
             higher_same_suit, lower_same_suit = [], []
             for card in same_suit_cards:
-                # TODO this is slightly ambigousm should this be >= ??
-                higher_same_suit.append(card) if game_engine.trick_scorer.rank_to_points(card.rank) > leader_card_score else lower_same_suit.append(card)
+                higher_same_suit.append(card) if card.rank > leader_card.rank else lower_same_suit.append(card)
             if higher_same_suit:
-                return RegularMove.from_cards(higher_same_suit)
+                return getPlayCardMoves(higher_same_suit)
         # failing this, you must play a lower card of the same suit;
             elif lower_same_suit:
-                return RegularMove.from_cards(lower_same_suit)
-            raise AssertionError("Somethign is wrong in the logic here. There should be cards, but they are neither placed in the low, nor higher list")
+                return getPlayCardMoves(lower_same_suit)
         # failing this, if the opponen did not play a trump, you must play a trump
-        trump_cards = hand.filter_suit(game_state.trump_suit)
-        if leader_card.suit != game_state.trump_suit and trump_cards:
-            return RegularMove.from_cards(trump_cards)
+        trump_cards = filter_hand_by_suit(hand,game_state['trump_suit'])
+        if leader_card.suit != game_state['trump_suit'] and trump_cards:
+            return getPlayCardMoves(trump_cards)
         # failing this, you can play anything
-        return RegularMove.from_cards(hand.get_cards()) """
-        return True
-    
+        return getPlayCardMoves(hand)
 
+
+def decode_cards(env_cards: np.ndarray) -> List[Card]:
+    result = []  # type: List[Card]
+    for i in range(20):
+        if env_cards[i] == 1:
+            card = _deck[i]
+            result.append(card)
+    return result
+
+
+def encode_cards(cards) -> np.ndarray:
+    plane = np.zeros(20, dtype=int)
+    
+    for card in cards:
+        card_id = card.get_card_id()
+        plane[card_id] = 1
+    return plane

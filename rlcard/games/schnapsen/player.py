@@ -7,7 +7,7 @@ from .utils import utils
 #from .utils import melding
 
 
-class SchnapsenPlayer:
+class  SchnapsenPlayer:
 
     def __init__(self, player_id: int, np_random):
         ''' Initialize a GinRummy player class
@@ -17,6 +17,8 @@ class SchnapsenPlayer:
         '''
         self.np_random = np_random
         self.player_id = player_id
+        self.won_tricks = []
+        self.points = 0
         self.hand = []  # type: List[Card]
         self.known_cards = []  # type: List[Card]  # opponent knows cards picked up by player and not yet discarded
         # memoization for speed
@@ -38,4 +40,7 @@ class SchnapsenPlayer:
         ''' Return the id of the player
         '''
         return self.player_id
+    
+    
+
 

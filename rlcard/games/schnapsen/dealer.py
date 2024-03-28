@@ -1,6 +1,6 @@
 from .player import SchnapsenPlayer
 from .utils import utils as utils
-
+from rlcard.games.schnapsen.schnapsencard import SchnapsenCard
 
 class SchnapsenDealer:
     ''' Initialize a SchnapsenDealer class
@@ -9,10 +9,10 @@ class SchnapsenDealer:
         ''' Empty discard_pile, set shuffled_deck, set stock_pile
         '''
         self.np_random = np_random
-        self.shuffled_deck = utils.get_deck()  # keep a copy of the shuffled cards at start of new hand
+        self.shuffled_deck = SchnapsenCard.get_deck()  # keep a copy of the shuffled cards at start of new hand
         self.np_random.shuffle(self.shuffled_deck)
         self.stock_pile = self.shuffled_deck.copy()  
-        self.__trumpSuit = self.stock_pile[0].suit
+        self.__trump_suit = self.stock_pile[0].suit
 
     def deal_cards(self, player: SchnapsenPlayer):
         ''' Deal some cards from stock_pile to one player
@@ -23,12 +23,11 @@ class SchnapsenDealer:
         '''
         for _ in range(5):
             player.hand.append(self.stock_pile.pop())
-        player.did_populate_hand()
 
     def trumpExchange(self, SchnapsenCard):
         if(len(self.stock_pile) >= 2):
             old = self.stock_pile.pop(0)
-            self.stock_pile.insert(SchnapsenCard)
+            self.stock_pile.insert(0,SchnapsenCard)
             return old
         return None
     
@@ -45,5 +44,11 @@ class SchnapsenDealer:
         This still works, even when the Talon has become empty.
         """
         return self.__trump_suit
+    
+    def trumpCard(self):
+        """Return the suit of the trump card, i.e., the bottommost card.
+        This still works, even when the Talon has become empty.
+        """
+        return self.stock_pile[0]
     
 

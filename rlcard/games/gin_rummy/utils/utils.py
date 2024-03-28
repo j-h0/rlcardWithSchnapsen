@@ -24,7 +24,7 @@ def card_from_card_id(card_id: int) -> Card:
 
     Args:
         card_id: int in range(0, 52)
-     '''
+     '''52
     if not (0 <= card_id < 52):
         raise GinRummyProgramError("card_id is {}: should be 0 <= card_id < 52.".format(card_id))
     rank_id = card_id % 13
