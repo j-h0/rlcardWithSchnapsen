@@ -1,5 +1,5 @@
 from rlcard.games.schnapsen.schnapsencard import SchnapsenCard as Card
-from rlcard.games.schnapsen.utils.schnapsen_action_event import ActionEvent, PlayCardAction, TrumpExchangePlayerAction, MarriagePlayerAction
+from rlcard.games.schnapsen.utils.schnapsen_action_event import ActionEvent, PlayCardAction, TrumpExchangePlayerAction, MarriagePlayerAction, SixsixAction
 from dataclasses import dataclass, field
 from enum import Enum
 from random import Random
@@ -31,9 +31,11 @@ def getPlayCardMoves(hand):
     return valid_moves    
 
 class Moves:
-    def get_legal_leader_moves(game_state, hand) -> Iterable[ActionEvent]:
-        # all cards in the hand can be played
-        #cards_in_hand = game_state.leader.hand 
+    def get_legal_leader_moves(game_state, current_player) -> Iterable[ActionEvent]:
+
+        hand = current_player.hand
+        if not hand:
+            return []
         valid_moves = getPlayCardMoves(hand)
 
         # trump exchanges
@@ -41,12 +43,14 @@ class Moves:
             trump_jack = filter_hand(hand,2,game_state['trump_suit'])
             if trump_jack:
                 valid_moves.append(TrumpExchangePlayerAction())
+            if(current_player.points >= 66):
+                valid_moves.append(SixsixAction())
         # mariages
         for card in filter_hand(hand,3):
             king_card = filter_hand(hand,4,card.suit)
             if king_card:
                 suitIndex = card.get_suit_idx()
-                valid_moves.append(MarriagePlayerAction(suit = suitIndex)) 
+                valid_moves.append(MarriagePlayerAction(suit = suitIndex))
 
         return valid_moves
 
@@ -100,10 +104,11 @@ def decode_cards(env_cards: np.ndarray) -> List[Card]:
     return result
 
 
-def encode_cards(cards) -> np.ndarray:
-    plane = np.zeros(20, dtype=int)
+def encode_cards(cards,is_closed) -> np.ndarray:
+    plane = np.zeros(21, dtype=int)
+    plane[20] = is_closed
     
     for card in cards:
         card_id = card.get_card_id()
-        plane[card_id] = 1
+        plane[card_id] = 1    
     return plane

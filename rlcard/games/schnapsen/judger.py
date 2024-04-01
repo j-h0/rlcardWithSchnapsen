@@ -9,8 +9,8 @@ class SchnapsenJudger:
         if emptydeck:
             return 1,-1
     
-        if leader.score >= 66:
-            follower_score = follower.score
+        if leader.points >= 66:
+            follower_score = follower.points
             if follower_score == 0:
                 return 3,-3
             elif follower_score >= 33:

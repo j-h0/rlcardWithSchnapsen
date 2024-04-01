@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 from .player import SchnapsenPlayer
 from .round import SchnapsenRound
@@ -9,7 +10,7 @@ from .utils.schnapsen_action_event import *
 from .utils.schnapsen_action_event import *
 
 class SchnapsenGame:
-    def __init__(self, allow_step_back=False):
+    def __init__(self, allow_step_back=True):
         '''Initialize the class GinRummyGame
         '''
         self.allow_step_back = allow_step_back
@@ -18,6 +19,8 @@ class SchnapsenGame:
         self.actions = None  # type: List[ActionEvent] or None # must reset in init_game
         self.round = None  # round: SchnapsenRound or None, must reset in init_game
         self.num_players = 2
+        # Save the hisory for stepping back to the last state.
+        self.history = []
 
     def init_game(self):
         ''' Initialize all characters in the game and start round 1
@@ -63,13 +66,24 @@ class SchnapsenGame:
         else:
             next_player_id = self.round.leader
         next_state = self.get_state(player_id=next_player_id)
+
+        if self.allow_step_back:
+            # First snapshot the current state
+            his_dealer = deepcopy(self.dealer)
+            his_round = deepcopy(self.round)
+            his_players = deepcopy(self.players)
+            self.history.append((his_dealer, his_players, his_round))
+        
         return next_state, next_player_id
 
 
     def step_back(self):
         ''' Takes one step backward and restore to the last state
         '''
-        raise NotImplementedError
+        if not self.history:
+            return False
+        self.dealer, self.players, self.round = self.history.pop()
+        return True
 
     def get_num_players(self):
         ''' Return the number of players in the game
@@ -90,7 +104,7 @@ class SchnapsenGame:
         current_player_id = self.round.get_current_player_id()
 
         state['current_player'] = current_player_id
-        state['legal_actions'] = self.round.get_legal_actions(current_player_id)
+        #state['legal_actions'] = self.round.get_legal_actions(current_player_id)
         return state
 
     def get_payoffs(self):

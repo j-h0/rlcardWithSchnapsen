@@ -23,8 +23,6 @@ class SchnapsenRound:
 
         self.trump_suit = self.dealer.trumpSuit()
 
-        self.target = None
-
         self.is_closed = False
 
         self.leader = start_leader_id
@@ -33,16 +31,12 @@ class SchnapsenRound:
 
         self.is_over = False
 
-        shuffled_deck = self.dealer.shuffled_deck
-
         self.players = [SchnapsenPlayer(player_id=0, np_random=self.np_random),
                          SchnapsenPlayer(player_id=1, np_random=self.np_random)]
 
         self.current_trick = []
 
-        self.all_tricks = []
-
-        self.move_sheet = []  # type: List[GinRummyMove]
+        self.move_sheet = [self.trump_suit]  # type: List[GinRummyMove]
 
         self.winner = None
 
@@ -63,13 +57,16 @@ class SchnapsenRound:
         if(len(self.dealer.stock_pile) <= 0):
             self.is_closed = True
             return
-        card = self.dealer.stock_pile.pop()
+        card = self.dealer.drawCard()
+        if card is None:
+            print("wtf: ",self.is_closed)
         self.players[player].hand.append(card)
 
     def play_card(self, action: PlayCardAction):
                 # when current_player takes PlayCardAction step, the move is recorded and executed
         current_player = self.get_current_player()
         card = action.card
+        self.move_sheet.append([current_player.get_player_id(),"Playcard", card])
         current_player.hand.remove(card)
         self.current_trick.append(card)
 
@@ -79,6 +76,9 @@ class SchnapsenRound:
 
             self.leader, self.follower, winner = SchnapsenJudger.judge_trick(self.leader,self.follower,self.current_trick,self.dealer.trumpSuit())
             self.players[self.leader].won_tricks += self.current_trick
+            self.players[self.leader].points += (self.current_trick[0].rank + self.current_trick[1].rank)
+            self.players[self.follower].known_cards.append(self.current_trick[0])
+            self.players[self.follower].known_cards.append(self.current_trick[1])
             self.current_player_id = self.leader
 
             self.current_trick.clear()
@@ -86,25 +86,37 @@ class SchnapsenRound:
             self.draw_card(self.follower)
   
 
-        return None
-
     def marriage(self, action: MarriagePlayerAction):
-        current_player = self.players[self.current_player_id]
-        suit = action.suit
+        current_player = self.get_current_player()
+        suit = SchnapsenCard.suits[action.suit]
+        self.move_sheet.append([current_player.get_player_id(),"Marriage", suit])
         if(suit == self.trump_suit):
             current_player.points += 40
         else:
-            current_player.points += 20    
-        queen = filter_hand(current_player.hand,2,suit)[0]
+            current_player.points += 20 
+        queen = filter_hand(current_player.hand,3,suit)[0]
+        king = filter_hand(current_player.hand,4,suit)[0]
+
+        self.players[self.follower].known_cards.append(king)
+
         self.play_card(PlayCardAction(queen))
 
 
     def trumpExchange(self, action: TrumpExchangePlayerAction):
-        current_player = self.players[self.current_player_id]
+        if self.is_closed or not self.dealer.stock_pile:
+            print("WHHHYYYYY")
+            return
+        current_player = self.get_current_player()
+        self.move_sheet.append([current_player.get_player_id(),"trumpexchange"])
         trumpJack = SchnapsenCard.get_trump_jack(self.trump_suit)
+        if trumpJack is None:
+            print("WTF")
         current_player.hand.remove(trumpJack)
         card = self.dealer.trumpExchange(trumpJack)
+        if card is None:
+            print("wtf: ",self.is_closed)
         current_player.hand.append(card)
+        self.players[self.follower].known_cards.append(card)
 
     def closeTalon(self, action: CloseTalonAction):
         self.is_closed = True
@@ -114,13 +126,15 @@ class SchnapsenRound:
 
     def get_legal_actions(self, playerId):
         legal_actions = []
-        playable_cards = []
         hand = self.players[playerId].hand
 
         if(playerId == self.leader):
-            legal_actions = Moves.get_legal_leader_moves(self.get_state(playerId), hand)
+            legal_actions = Moves.get_legal_leader_moves(self.get_state(playerId), self.get_current_player())
         else:
             legal_actions = Moves.get_legal_follower_moves(self.get_state(playerId), hand)
+
+        if not legal_actions:
+            self.is_over = True
 
         return legal_actions
     
@@ -133,12 +147,10 @@ class SchnapsenRound:
         '''
         state = {}
         #(valid_act, player, cards) = self.judger.judge_pong_gong(self.dealer, players, self.last_player)
-
         state['is_leader'] = self.leader == player_id
         state['current_hand'] = self.players[player_id].hand
         state['current_trick'] = self.current_trick 
-        state['all_tricks'] = self.all_tricks
-        state['is_closed'] = self.is_closed
+        state['is_closed'] = (self.is_closed or len(self.dealer.stock_pile) == 0)
         state['trump_suit'] = self.dealer.trumpSuit()
         if not self.dealer.stock_pile:
             if not self.players[self.follower].hand:

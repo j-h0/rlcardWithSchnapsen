@@ -13,7 +13,7 @@ class SchnapsenEnv(Env):
         self.name = 'schnapsen'
         self.game = Game()
         super().__init__(config=config)
-        self.state_shape = [[6, 20] for _ in range(self.num_players)]
+        self.state_shape = [[1, 6, 21] for _ in range(self.num_players)]
         self.action_shape = [None for _ in range(self.num_players)]
         self._utils = utils
 
@@ -33,20 +33,21 @@ class SchnapsenEnv(Env):
         opponent = self.game.round.players[(current_player.player_id + 1) % 2]
 
         stock_pile = self.game.round.dealer.stock_pile
+        is_closed = state["is_closed"]
 
-        encoded_hand = utils.encode_cards(current_player.hand)
-        won_cards = utils.encode_cards(current_player.won_tricks)
-        known_cards = utils.encode_cards(current_player.known_cards)
+        encoded_hand = utils.encode_cards(current_player.hand,is_closed)
+        won_cards = utils.encode_cards(current_player.won_tricks,is_closed)
+        known_cards = utils.encode_cards(current_player.known_cards,is_closed)
 
-        oponnent_won_cards = utils.encode_cards(opponent.won_tricks)
-        oponnent_known_cards = utils.encode_cards(opponent.known_cards)
+        oponnent_won_cards = utils.encode_cards(opponent.won_tricks,is_closed)
+        oponnent_known_cards = utils.encode_cards(opponent.known_cards,is_closed)
 
         unknown_cards = stock_pile + [card for card in opponent.hand]
         for card in unknown_cards:
             if card in known_cards:
                 unknown_cards.remove(card)
 
-        encoded_unknown_cards = utils.encode_cards(unknown_cards)
+        encoded_unknown_cards = utils.encode_cards(unknown_cards,is_closed)
 
         rep = [encoded_hand, won_cards, oponnent_won_cards, known_cards, oponnent_known_cards, encoded_unknown_cards]
         obs = np.array(rep)

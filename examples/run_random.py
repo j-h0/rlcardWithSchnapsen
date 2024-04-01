@@ -17,7 +17,7 @@ def run(args):
     )
 
     # Seed numpy, torch, random
-    set_seed(42)
+    set_seed(1)
 
     # Set agents
     agent = RandomAgent(num_actions=env.num_actions)

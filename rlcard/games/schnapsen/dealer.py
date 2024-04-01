@@ -22,14 +22,21 @@ class SchnapsenDealer:
             num (int): The number of cards to be dealt
         '''
         for _ in range(5):
-            player.hand.append(self.stock_pile.pop())
+            card = self.stock_pile.pop()
+            if card is None:
+                print("WTF")
+            player.hand.append(card)
 
     def trumpExchange(self, SchnapsenCard):
+        if(len(self.stock_pile) < 2):
+            print("how do i get here"),
+            return SchnapsenCard
         if(len(self.stock_pile) >= 2):
             old = self.stock_pile.pop(0)
+            if old is None:
+                print("stop")
             self.stock_pile.insert(0,SchnapsenCard)
             return old
-        return None
     
     def trumpCard(self):
         """Returns the current trump card, i.e., the bottommost card.
@@ -37,7 +44,6 @@ class SchnapsenDealer:
         """
         if len(self.stock_pile) > 0:
             return self.stock_pile[0]
-        return None
     
     def trumpSuit(self):
         """Return the suit of the trump card, i.e., the bottommost card.
@@ -50,5 +56,12 @@ class SchnapsenDealer:
         This still works, even when the Talon has become empty.
         """
         return self.stock_pile[0]
+    
+    def drawCard(self):
+        """Return the suit of the trump card, i.e., the bottommost card.
+        This still works, even when the Talon has become empty.
+        """
+        return self.stock_pile.pop()
+    
     
 
