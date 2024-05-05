@@ -13,7 +13,7 @@ class SchnapsenEnv(Env):
         self.name = 'schnapsen'
         self.game = Game()
         super().__init__(config=config)
-        self.state_shape = [[1, 6, 21] for _ in range(self.num_players)]
+        self.state_shape = [[1, 7, 21] for _ in range(self.num_players)]
         self.action_shape = [None for _ in range(self.num_players)]
         self._utils = utils
 
@@ -49,7 +49,9 @@ class SchnapsenEnv(Env):
 
         encoded_unknown_cards = utils.encode_cards(unknown_cards,is_closed)
 
-        rep = [encoded_hand, won_cards, oponnent_won_cards, known_cards, oponnent_known_cards, encoded_unknown_cards]
+        encoded_currentTrick = utils.encode_cards(state["current_trick"],is_closed)
+
+        rep = [encoded_hand, won_cards, oponnent_won_cards, known_cards, oponnent_known_cards, encoded_unknown_cards, encoded_currentTrick]
         obs = np.array(rep)
         extracted_state = {'obs': obs, 'legal_actions': self._get_legal_actions(), 'raw_legal_actions': list(self._get_legal_actions().keys())}
         extracted_state['raw_obs'] = obs
