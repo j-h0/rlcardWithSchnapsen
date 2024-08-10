@@ -25,7 +25,7 @@ After installation, you can start using the environment to train and evaluate re
 
 ## License
 
-Licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](https://github.com/j-h0/rlcardWithSchnapsen/blob/master/LICENSE.md).
 
 ---
 
