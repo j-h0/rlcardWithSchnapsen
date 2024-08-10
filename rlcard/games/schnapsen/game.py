@@ -117,7 +117,8 @@ class SchnapsenGame:
         if not self.round.dealer.stock_pile:
             emptydeck = True
         x,y = self.judge.judge_game(self.round.players[self.round.leader],self.round.players[self.round.follower],emptydeck)
-        
+        if self.round.leader == 1:
+            return y,x
         return x,y
 
     @staticmethod
