@@ -197,31 +197,61 @@ def remove_illegal(action_probs, legal_actions):
         probs /= sum(probs)
     return probs
 
+import numpy as np
+
 def tournament(env, num):
-    ''' Evaluate he performance of the agents in the environment
+    ''' Evaluate the performance of the agents in the environment
 
     Args:
         env (Env class): The environment to be evaluated.
         num (int): The number of games to play.
 
     Returns:
-        A list of avrage payoffs for each player
+        A list of average payoffs for each player
     '''
     payoffs = [0 for _ in range(env.num_players)]
+    player_0_payoffs = []
     counter = 0
+    
     while counter < num:
         _, _payoffs = env.run(is_training=False)
         if isinstance(_payoffs, list):
             for _p in _payoffs:
+                player_0_payoffs.append(_p[0])
                 for i, _ in enumerate(payoffs):
                     payoffs[i] += _p[i]
                 counter += 1
         else:
+            player_0_payoffs.append(_payoffs[0])
             for i, _ in enumerate(payoffs):
                 payoffs[i] += _payoffs[i]
             counter += 1
+    
+    # Calculate average payoffs
     for i, _ in enumerate(payoffs):
         payoffs[i] /= counter
+
+    # Calculate median, lower (25th) percentile, and upper (75th) percentile for player 0
+    median_p0 = np.median(player_0_payoffs)
+    lower_percentile_p0 = np.percentile(player_0_payoffs, 25)
+    upper_percentile_p0 = np.percentile(player_0_payoffs, 75)
+    negative_count = sum(1 for payoff in player_0_payoffs if payoff < 0)
+    positive_count = sum(1 for payoff in player_0_payoffs if payoff > 0)
+
+    # Log results to a hardcoded text file
+    with open("/home/erpl/Documents/MCI/bachelor/restart/rlcard/rlcardWithSchnapsen/rlcardWithSchnapsen/schnapsenExperiment/tournament_results.txt", "a") as file:
+        file.write(f"___________________\n")
+        file.write(f"Player 0 Results:\n")
+
+        file.write(f"All: {player_0_payoffs}\n")
+        file.write(f"Mean: {payoffs[0]}\n")
+        file.write(f"Median: {median_p0}\n")
+        file.write(f"25th Percentile: {lower_percentile_p0}\n")
+        file.write(f"75th Percentile: {upper_percentile_p0}\n")
+        file.write(f"Negative Count: {negative_count}\n")
+        file.write(f"Positive Count: {positive_count}\n")
+        file.write(f"___________________\n")
+
     return payoffs
 
 def plot_curve(csv_path, save_path, algorithm):

@@ -36,8 +36,8 @@ def train(args):
     # Initialize the agent and use random agents as opponents
     from rlcard.agents import DQNAgent
     if args.load_checkpoint_path != "":
-        agent2 = DQNAgent.from_checkpoint(checkpoint=torch.load('experiments/training_lodir/checkpoint_dqn.pt',map_location=device))
-        agent = DQNAgent.from_checkpoint(checkpoint=torch.load('experiments/training_lodir2/checkpoint_dqn.pt',map_location=device))
+        agent2 =DQNAgent.from_checkpoint(checkpoint=torch.load('schnapsenExperiment/logdir+0.01+0.8+20000/checkpoint_dqn.pt',map_location=device))
+        agent = DQNAgent.from_checkpoint(checkpoint=torch.load('schnapsenExperiment/logdir+0.0001+1+30000/checkpoint_dqn.pt',map_location=device))
     else:
         agent = DQNAgent(
             num_actions=env.num_actions,
@@ -50,17 +50,7 @@ def train(args):
             learning_rate= args.learning_rate,
             discount_factor= args.discount_factor,
         )
-        agent2 = DQNAgent(
-            num_actions=env.num_actions,
-            state_shape=env.state_shape[0],
-            mlp_layers=[64,64],
-            device=device,
-            save_path=args.log_dir,
-            save_every=args.save_every,
-            replay_memory_size = args.replay_memory_size,
-            learning_rate= args.learning_rate,
-            discount_factor= args.discount_factor,
-        )
+        agent2 = RandomAgent(num_actions=env.num_actions)
 
     agents = [agent]
 
@@ -94,6 +84,7 @@ def train(args):
                     )[0]
                 )
 
+
         # Get the paths
         csv_path, fig_path = logger.csv_path, logger.fig_path
 
@@ -121,28 +112,28 @@ if __name__ == '__main__':
     parser.add_argument(
         '--num_episodes',
         type=int,
-        default=5000,
+        default=1000,
     )
     parser.add_argument(
         '--num_eval_games',
         type=int,
-        default=2000,
+        default=100,
     )
     parser.add_argument(
         '--evaluate_every',
         type=int,
-        default=100,
+        default=50,
     )
     parser.add_argument(
         '--log_dir',
         type=str,
-        default='experiments/training_lodir3/',
+        default='experiments/training_logdirNew/',
     )
     
     parser.add_argument(
         "--load_checkpoint_path",
         type=str,
-        default="home/erpl/Documents/MCI/bachelor/restart/rlcard/rlcardWithSchnapsen/rlcardWithSchnapsen/schnapsenExperiment/training/checkpoint_dqn.pt",
+        default="",
     )
     
     parser.add_argument(
