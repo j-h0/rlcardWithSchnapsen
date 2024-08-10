@@ -221,7 +221,7 @@ class DQNAgent(object):
         state_batch = np.array(state_batch)
 
         loss = self.q_estimator.update(state_batch, action_batch, target_batch)
-        print('\rINFO - Step {}, rl-loss: {}'.format(self.total_t, loss), end='')
+        #print('\rINFO - Step {}, rl-loss: {}'.format(self.total_t, loss), end='')
 
         # Update the target estimator
         if self.train_t % self.update_target_estimator_every == 0:
@@ -234,7 +234,7 @@ class DQNAgent(object):
             # To preserve every checkpoint separately, 
             # add another argument to the function call parameterized by self.train_t
             self.save_checkpoint(self.save_path)
-            print("\nINFO - Saved model checkpoint.")
+            #print("\nINFO - Saved model checkpoint.")
 
 
     def feed_memory(self, state, action, reward, next_state, legal_actions, done):
@@ -328,6 +328,7 @@ class DQNAgent(object):
             filename(str): the file name of checkpoint
         '''
         torch.save(self.checkpoint_attributes(), os.path.join(path, filename))
+
 
 
 class Estimator(object):
