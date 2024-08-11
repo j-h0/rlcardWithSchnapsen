@@ -35,9 +35,12 @@ def train(args):
 
     # Initialize the agent and use random agents as opponents
     from rlcard.agents import DQNAgent
-    if args.load_checkpoint_path != "":
-        agent2 =DQNAgent.from_checkpoint(checkpoint=torch.load('schnapsenExperiment/logdir+0.01+0.8+20000/checkpoint_dqn.pt',map_location=device))
-        agent = DQNAgent.from_checkpoint(checkpoint=torch.load('schnapsenExperiment/logdir+0.0001+1+30000/checkpoint_dqn.pt',map_location=device))
+    if args.training_agent != "":
+        agent = DQNAgent.from_checkpoint(checkpoint=torch.load(args.training_agent,map_location=device))
+        if args.opponent_agent != "":
+            agent2 = DQNAgent.from_checkpoint(checkpoint=torch.load(args.opponent_agent ,map_location=device))
+        else:
+            agent2 = RandomAgent(num_actions=env.num_actions)
     else:
         agent = DQNAgent(
             num_actions=env.num_actions,
@@ -81,7 +84,9 @@ def train(args):
                     tournament(
                         env,
                         args.num_eval_games,
+                        args.moreDataPath
                     )[0]
+
                 )
 
 
@@ -112,17 +117,17 @@ if __name__ == '__main__':
     parser.add_argument(
         '--num_episodes',
         type=int,
-        default=1000,
+        default=5000,
     )
     parser.add_argument(
         '--num_eval_games',
         type=int,
-        default=100,
+        default=2000,
     )
     parser.add_argument(
         '--evaluate_every',
         type=int,
-        default=50,
+        default=100,
     )
     parser.add_argument(
         '--log_dir',
@@ -159,6 +164,22 @@ if __name__ == '__main__':
         type = int,
         default= 20000,
     )
+    parser.add_argument(
+        "--training_agent",
+        type= str,
+        default="",
+    )
+    parser.add_argument(
+        "--opponent_agent",
+        type= str,
+        default="",
+    )
+    parser.add_argument(
+        "--moreDataPath",
+        type=str,
+        default="",
+    )
+
 
     args = parser.parse_args()
 
