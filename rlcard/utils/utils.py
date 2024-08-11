@@ -199,7 +199,7 @@ def remove_illegal(action_probs, legal_actions):
 
 import numpy as np
 
-def tournament(env, num):
+def tournament(env, num, moreDataPath = ""):
     ''' Evaluate the performance of the agents in the environment
 
     Args:
@@ -238,19 +238,19 @@ def tournament(env, num):
     negative_count = sum(1 for payoff in player_0_payoffs if payoff < 0)
     positive_count = sum(1 for payoff in player_0_payoffs if payoff > 0)
 
-    # Log results to a hardcoded text file
-    with open("/home/erpl/Documents/MCI/bachelor/restart/rlcard/rlcardWithSchnapsen/rlcardWithSchnapsen/schnapsenExperiment/tournament_results.txt", "a") as file:
-        file.write(f"___________________\n")
-        file.write(f"Player 0 Results:\n")
+    if(moreDataPath != ""):
+        with open(moreDataPath, "a") as file:
+            file.write(f"___________________\n")
+            file.write(f"Player 0 Results:\n")
 
-        file.write(f"All: {player_0_payoffs}\n")
-        file.write(f"Mean: {payoffs[0]}\n")
-        file.write(f"Median: {median_p0}\n")
-        file.write(f"25th Percentile: {lower_percentile_p0}\n")
-        file.write(f"75th Percentile: {upper_percentile_p0}\n")
-        file.write(f"Negative Count: {negative_count}\n")
-        file.write(f"Positive Count: {positive_count}\n")
-        file.write(f"___________________\n")
+            file.write(f"All: {player_0_payoffs}\n")
+            file.write(f"Mean: {payoffs[0]}\n")
+            file.write(f"Median: {median_p0}\n")
+            file.write(f"25th Percentile: {lower_percentile_p0}\n")
+            file.write(f"75th Percentile: {upper_percentile_p0}\n")
+            file.write(f"Negative Count: {negative_count}\n")
+            file.write(f"Positive Count: {positive_count}\n")
+            file.write(f"___________________\n")
 
     return payoffs
 
