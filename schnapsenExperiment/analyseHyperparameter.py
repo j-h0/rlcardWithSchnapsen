@@ -3,8 +3,6 @@ import numpy as np
 
 def analyze_data_blocks(data_blocks):
     winrates = []
-    big_wins = []
-    big_losses = []
 
     for block in data_blocks:
         win_count = np.sum(np.array(block) > 0)
@@ -83,7 +81,7 @@ def analyze_differences(section_stats):
     return mean_variance, winrate_variance, count_of_3_variance
 
 # Read the entire file content
-file_path = 'schnapsenExperiment/tournament_results.txt'
+file_path = 'schnapsenExperiment/training.txt'
 with open(file_path, 'r') as file:
     file_content = file.read()
 

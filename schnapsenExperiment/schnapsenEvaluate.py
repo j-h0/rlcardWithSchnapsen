@@ -30,9 +30,9 @@ def evaluate(args):
     # Load models
     if args.agent_path != "":
         agent = torch.load(args.agent_path, map_location=device)
+        agent.set_device(device)
     else:
         agent =  RandomAgent(num_actions=env.num_actions)
-        agent.set_device(device)
     if args.opponent_path != "":
         agent2 = torch.load(args.opponent_path, map_location=device)
         agent2.set_device(device)

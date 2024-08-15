@@ -64,7 +64,9 @@ class SchnapsenEnv(Env):
         Returns:
             payoffs (list): a list of payoffs for each player
         '''
-        
+        print(self.game.round.move_sheet)
+        print("==========================")
+        print(self.game.get_payoffs())
         return np.array(self.game.get_payoffs())
 
     def _decode_action(self, action_id: int):

@@ -37,10 +37,6 @@ def train(args):
     from rlcard.agents import DQNAgent
     if args.training_agent != "":
         agent = DQNAgent.from_checkpoint(checkpoint=torch.load(args.training_agent,map_location=device))
-        if args.opponent_agent != "":
-            agent2 = DQNAgent.from_checkpoint(checkpoint=torch.load(args.opponent_agent ,map_location=device))
-        else:
-            agent2 = RandomAgent(num_actions=env.num_actions)
     else:
         agent = DQNAgent(
             num_actions=env.num_actions,
@@ -53,6 +49,9 @@ def train(args):
             learning_rate= args.learning_rate,
             discount_factor= args.discount_factor,
         )
+    if args.opponent_agent != "":
+        agent2 = DQNAgent.from_checkpoint(checkpoint=torch.load(args.opponent_agent ,map_location=device))
+    else:
         agent2 = RandomAgent(num_actions=env.num_actions)
 
     agents = [agent]
@@ -135,11 +134,6 @@ if __name__ == '__main__':
         default='experiments/training_logdirNew/',
     )
     
-    parser.add_argument(
-        "--load_checkpoint_path",
-        type=str,
-        default="",
-    )
     
     parser.add_argument(
         "--save_every",
