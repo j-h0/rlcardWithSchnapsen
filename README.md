@@ -38,7 +38,9 @@ After installation, you can start using the environment to train and evaluate re
 
 Start by familiarizing yourself with the repository, including the original codebase.
 
-Use hyperparameter.sh training.sh with different values to train a Schnapsen agent
+Use hyperparameter.sh for hyperparameter grid search
+
+training.sh with different values to train a Schnapsen agent
 
 ## License
 
