@@ -66,7 +66,8 @@ class SchnapsenRound:
                 # when current_player takes PlayCardAction step, the move is recorded and executed
         current_player = self.get_current_player()
         card = action.card
-        self.move_sheet.append([current_player.get_player_id(),"Playcard", card])
+        hand = current_player.hand
+        self.move_sheet.append([current_player.get_player_id(),f"Player Hand: {hand}",f"current points: {current_player.points}",f"Playcard", card])
         current_player.hand.remove(card)
         self.current_trick.append(card)
 
